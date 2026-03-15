@@ -1498,3 +1498,33 @@ footer {
 .audio-toggle:hover, .audio-toggle.active {
     color: var(--mcu-red);
 }
+
+/* ===== MOBILE MOVIE GRID FIX ===== */
+
+@media (max-width: 768px) {
+
+    .controls-panel {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filters {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .search-box {
+        width: 100%;
+    }
+
+    .order-toggle-container {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .movie-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+
+}
