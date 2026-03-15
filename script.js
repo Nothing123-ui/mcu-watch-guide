@@ -1052,6 +1052,8 @@ function renderMovieGrid(movies) {
     });
 
     // Initialize VanillaTilt on the new cards
+   // Initialize VanillaTilt ONLY on desktop
+if (window.innerWidth > 768) {
     VanillaTilt.init(document.querySelectorAll(".movie-card"), {
         max: 15,
         speed: 400,
@@ -1059,6 +1061,7 @@ function renderMovieGrid(movies) {
         "max-glare": 0.2,
         scale: 1.02
     });
+}
 
     // Reattach listeners to new elements
     document.querySelectorAll('.watch-toggle').forEach(el => {
