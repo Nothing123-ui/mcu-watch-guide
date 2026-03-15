@@ -1067,14 +1067,16 @@ function renderMovieGrid(movies) {
         elements.movieGrid.appendChild(card);
     });
 
-    // Initialize VanillaTilt on the new cards
-    VanillaTilt.init(document.querySelectorAll(".movie-card"), {
-        max: 15,
-        speed: 400,
-        glare: true,
-        "max-glare": 0.2,
-        scale: 1.02
-    });
+    // Initialize VanillaTilt on the new cards only on desktop
+    if (window.innerWidth > 768) {
+        VanillaTilt.init(document.querySelectorAll(".movie-card"), {
+            max: 15,
+            speed: 400,
+            glare: true,
+            "max-glare": 0.2,
+            scale: 1.02
+        });
+    }
 
     // Reattach listeners to new elements
     document.querySelectorAll('.watch-toggle').forEach(el => {
