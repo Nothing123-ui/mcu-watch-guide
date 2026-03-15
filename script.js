@@ -1106,6 +1106,8 @@ function renderTimeline(movies) {
     });
 
     // Initialize VanillaTilt on the new timeline nodes
+// Initialize VanillaTilt ONLY on desktop
+if (window.innerWidth > 768) {
     VanillaTilt.init(document.querySelectorAll(".timeline-node"), {
         max: 20,
         speed: 400,
@@ -1113,6 +1115,7 @@ function renderTimeline(movies) {
         "max-glare": 0.3,
         scale: 1.05
     });
+}
 }
 
 // Interaction Handlers
