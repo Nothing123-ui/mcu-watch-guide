@@ -1528,3 +1528,14 @@ footer {
     }
 
 }
+
+@media (max-width: 768px) {
+
+    .movie-card,
+    .timeline-node {
+        transform: none !important;
+        perspective: none !important;
+        transform-style: flat !important;
+    }
+
+}
