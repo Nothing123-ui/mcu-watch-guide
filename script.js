@@ -710,9 +710,13 @@ function saveTheme() {
 // Setup Event Listeners
 function setupEventListeners() {
     // Sorting & Filtering
+    let searchTimeout;
     elements.searchBox.addEventListener('input', (e) => {
-        state.filters.search = e.target.value.toLowerCase();
-        updateUI();
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            state.filters.search = e.target.value.toLowerCase();
+            updateUI();
+        }, 150);
     });
 
     elements.phaseFilter.addEventListener('change', (e) => {
@@ -783,16 +787,17 @@ function setupEventListeners() {
     });
 
     // Global Hover Sound for Interactive Elements
-    document.body.addEventListener('mouseenter', (e) => {
+    document.body.addEventListener('mouseover', (e) => {
         if (!state.audioEnabled) return;
-        if (e.target.tagName === 'BUTTON' ||
-            e.target.closest('.movie-card') ||
-            e.target.closest('.timeline-node') ||
-            e.target.tagName === 'A' ||
-            e.target.tagName === 'SELECT') {
-            playHoverSound();
-        }
-    }, true);
+
+        const target = e.target.closest('button, .movie-card, .timeline-node, a, select');
+        if (!target) return;
+
+        // If the mouse came from inside the same interactive element, don't replay
+        if (e.relatedTarget && target.contains(e.relatedTarget)) return;
+
+        playHoverSound();
+    });
 
     // Modal
     elements.modalClose.addEventListener('click', closeTrailerModal);
@@ -813,13 +818,18 @@ function setupEventListeners() {
     });
 
     // Scroll to Top
+    let scrollTimeout;
     window.addEventListener('scroll', () => {
-        if (window.scrollY > 500) {
-            elements.scrollTopBtn.classList.remove('hidden');
-        } else {
-            elements.scrollTopBtn.classList.add('hidden');
-        }
-    });
+        if (scrollTimeout) return;
+        scrollTimeout = setTimeout(() => {
+            if (window.scrollY > 500) {
+                elements.scrollTopBtn.classList.remove('hidden');
+            } else {
+                elements.scrollTopBtn.classList.add('hidden');
+            }
+            scrollTimeout = null;
+        }, 100);
+    }, { passive: true });
 
     elements.scrollTopBtn.addEventListener('click', () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1001,6 +1011,12 @@ function populateYearsFilter() {
 }
 
 function renderMovieGrid(movies) {
+    // Destroy existing VanillaTilt instances to prevent memory/listener leaks
+    const existingCards = elements.movieGrid.querySelectorAll('.movie-card');
+    existingCards.forEach(card => {
+        if (card.vanillaTilt) card.vanillaTilt.destroy();
+    });
+
     elements.movieGrid.innerHTML = '';
 
     if (movies.length === 0) {
@@ -1052,8 +1068,6 @@ function renderMovieGrid(movies) {
     });
 
     // Initialize VanillaTilt on the new cards
-   // Initialize VanillaTilt ONLY on desktop
-if (window.innerWidth > 768) {
     VanillaTilt.init(document.querySelectorAll(".movie-card"), {
         max: 15,
         speed: 400,
@@ -1061,7 +1075,6 @@ if (window.innerWidth > 768) {
         "max-glare": 0.2,
         scale: 1.02
     });
-}
 
     // Reattach listeners to new elements
     document.querySelectorAll('.watch-toggle').forEach(el => {
@@ -1080,6 +1093,12 @@ if (window.innerWidth > 768) {
 }
 
 function renderTimeline(movies) {
+    // Destroy existing VanillaTilt instances to prevent leaks
+    const existingNodes = elements.timelineTrack.querySelectorAll('.timeline-node');
+    existingNodes.forEach(node => {
+        if (node.vanillaTilt) node.vanillaTilt.destroy();
+    });
+
     elements.timelineTrack.innerHTML = '';
 
     movies.forEach(movie => {
@@ -1109,16 +1128,18 @@ function renderTimeline(movies) {
     });
 
     // Initialize VanillaTilt on the new timeline nodes
-// Initialize VanillaTilt ONLY on desktop
-if (window.innerWidth > 768) {
-    VanillaTilt.init(document.querySelectorAll(".timeline-node"), {
-        max: 20,
-        speed: 400,
-        glare: true,
-        "max-glare": 0.3,
-        scale: 1.05
-    });
-}
+    // Enable tilt ONLY on desktop
+    if (window.innerWidth > 768) {
+
+        VanillaTilt.init(document.querySelectorAll(".timeline-node"), {
+            max: 15,
+            speed: 400,
+            glare: true,
+            "max-glare": 0.2,
+            scale: 1.02
+        });
+
+    }
 }
 
 // Interaction Handlers
@@ -1226,13 +1247,18 @@ function closeTrailerModal() {
 }
 
 // Intersection Observer for scroll animations
+let fadeObserver = null;
 function observeElements() {
-    const observer = new IntersectionObserver((entries) => {
+    if (fadeObserver) {
+        fadeObserver.disconnect();
+    }
+
+    fadeObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add('visible');
                 // Optional: stop observing once faded in
-                observer.unobserve(entry.target);
+                fadeObserver.unobserve(entry.target);
             }
         });
     }, {
@@ -1241,7 +1267,7 @@ function observeElements() {
     });
 
     document.querySelectorAll('.section-fade').forEach(el => {
-        observer.observe(el);
+        fadeObserver.observe(el);
     });
 }
 
