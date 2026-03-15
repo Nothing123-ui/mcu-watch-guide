@@ -1011,11 +1011,6 @@ function populateYearsFilter() {
 }
 
 function renderMovieGrid(movies) {
-    // Destroy existing VanillaTilt instances to prevent memory/listener leaks
-    const existingCards = elements.movieGrid.querySelectorAll('.movie-card');
-    existingCards.forEach(card => {
-        if (card.vanillaTilt) card.vanillaTilt.destroy();
-    });
 
     elements.movieGrid.innerHTML = '';
 
@@ -1067,17 +1062,6 @@ function renderMovieGrid(movies) {
         elements.movieGrid.appendChild(card);
     });
 
-    // Initialize VanillaTilt on the new cards only on desktop
-    if (window.innerWidth > 768) {
-        VanillaTilt.init(document.querySelectorAll(".movie-card"), {
-            max: 15,
-            speed: 400,
-            glare: true,
-            "max-glare": 0.2,
-            scale: 1.02
-        });
-    }
-
     // Reattach listeners to new elements
     document.querySelectorAll('.watch-toggle').forEach(el => {
         el.addEventListener('change', handleWatchToggle);
@@ -1095,12 +1079,6 @@ function renderMovieGrid(movies) {
 }
 
 function renderTimeline(movies) {
-    // Destroy existing VanillaTilt instances to prevent leaks
-    const existingNodes = elements.timelineTrack.querySelectorAll('.timeline-node');
-    existingNodes.forEach(node => {
-        if (node.vanillaTilt) node.vanillaTilt.destroy();
-    });
-
     elements.timelineTrack.innerHTML = '';
 
     movies.forEach(movie => {
@@ -1129,19 +1107,7 @@ function renderTimeline(movies) {
         elements.timelineTrack.appendChild(node);
     });
 
-    // Initialize VanillaTilt on the new timeline nodes
-    // Enable tilt ONLY on desktop
-    if (window.innerWidth > 768) {
-
-        VanillaTilt.init(document.querySelectorAll(".timeline-node"), {
-            max: 15,
-            speed: 400,
-            glare: true,
-            "max-glare": 0.2,
-            scale: 1.02
-        });
-
-    }
+    // No VanillaTilt initialization
 }
 
 // Interaction Handlers
