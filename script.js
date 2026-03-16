@@ -767,20 +767,33 @@ function setupEventListeners() {
     });
 
     // Audio Toggle
-    elements.audioToggle.addEventListener('click', () => {
-        state.audioEnabled = !state.audioEnabled;
+   elements.audioToggle.addEventListener('click', async () => {
 
-        if (state.audioEnabled) {
-            elements.audioToggle.classList.add('active');
-            elements.audioToggle.innerHTML = '<i class="fas fa-volume-up"></i>';
-            elements.ambientAudio.volume = 0.2;
-            elements.ambientAudio.play().catch(e => console.log("Audio play prevented"));
-        } else {
-            elements.audioToggle.classList.remove('active');
-            elements.audioToggle.innerHTML = '<i class="fas fa-volume-mute"></i>';
-            elements.ambientAudio.pause();
+    state.audioEnabled = !state.audioEnabled;
+
+    if (state.audioEnabled) {
+
+        elements.audioToggle.classList.add('active');
+        elements.audioToggle.innerHTML = '<i class="fas fa-volume-up"></i>';
+
+        try {
+            elements.ambientAudio.currentTime = 0;
+            elements.ambientAudio.volume = 0.25;
+            await elements.ambientAudio.play();
+        } catch (err) {
+            alert("Tap again to enable audio 🙂");
+            state.audioEnabled = false;
         }
-    });
+
+    } else {
+
+        elements.audioToggle.classList.remove('active');
+        elements.audioToggle.innerHTML = '<i class="fas fa-volume-mute"></i>';
+        elements.ambientAudio.pause();
+
+    }
+
+});
 
     // Global Hover Sound for Interactive Elements
     document.body.addEventListener('mouseover', (e) => {
