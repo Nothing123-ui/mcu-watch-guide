@@ -657,33 +657,29 @@ const elements = {
     currentYear: document.getElementById('current-year')
 };
 
-// Initialize App
 function initApp() {
-    // Determine the max order for sorting purposes
+
     state.movies = [...mcuMovies];
     state.audioEnabled = false;
 
-    // Load local storage
     loadData();
-
-    // Initialize Years dropdown
     populateYearsFilter();
-
-    // Setup Event Listeners
     setupEventListeners();
 
-    // Set initial render
     elements.currentYear.textContent = new Date().getFullYear();
+
     if (state.theme === 'light') {
         document.body.classList.remove('dark-theme');
         document.body.classList.add('light-theme');
     }
 
-    // Refresh UI
     updateUI();
-
-    // Initialize Scroll Animations
     observeElements();
+
+    document.body.addEventListener("click", () => {
+        elements.ambientAudio.play().catch(()=>{});
+    }, { once: true });
+
 }
 
 // Data Persistence
