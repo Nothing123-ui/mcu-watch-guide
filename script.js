@@ -648,9 +648,9 @@ const elements = {
     themeToggle: document.getElementById('theme-toggle'),
 
     // Audio
-    audioToggle: document.getElementById('audio-toggle'),
-    ambientAudio: document.getElementById('ambient-audio'),
-    hoverAudio: document.getElementById('hover-audio'),
+    audioToggle: null,
+    ambientAudio: null,
+    hoverAudio: null,
 
     // Misc
     scrollTopBtn: document.getElementById('scroll-top-btn'),
@@ -675,10 +675,6 @@ function initApp() {
 
     updateUI();
     observeElements();
-
-    document.body.addEventListener("click", () => {
-        elements.ambientAudio.play().catch(()=>{});
-    }, { once: true });
 
 }
 
